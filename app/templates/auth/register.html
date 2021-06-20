@@ -1,0 +1,22 @@
+% extends 'base.html'%}
+{% import 'bootstrap/wtf.html' as wtf%}
+
+{% block content %}
+<div class="container-fluid" style="margin-top: 3cm;">
+  <div class="jumbotron">
+<div class="row">
+<div class="col-md-2"> </div>
+<div class="col-md-8">
+
+{{wtf.quick_form(registration_form)}}
+
+</div>
+<div class="col-md-2"></div>
+</div>
+</div>
+</div>
+<div class="container-fluid bg-primary" style="margin-top: 6cm;">
+    {% include 'footer.html'%}
+  </div>
+
+{% endblock%}

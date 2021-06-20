@@ -1,38 +1,64 @@
 {% extends 'base.html'%}
-{%block navbar %}
-{% include 'navbar.html' %}
-{% endblock %}
+<!DOCTYPE html>
+
+<head> </head>
 {% block content %}
-{% for quote in getquotes %}
-<div class="container-fluid" style="font-size: 20px; font-family: 'Merienda', cursive;  padding-top: 40px;">
-    <div class="jumbotron hjumbo">
-        <div class="overlay">
-            <h1 class="text-center text-bold" style="color: #9933CC;">WELCOME TO MY BLOG</h1>
-        </div>
+
+<div class="container-fluid">
+  <div class="wrapper">
+    <div style="text-align: center; font-size: 30px">
+      <span
+        style="
+          font-size: 100px;
+          font-family: 'Special Elite', cursive;
+          text-align: center;
+        "
+        class="text-primary"
+        ><p>
+          <marquee
+            behaviour="scroll"
+            width="1300px"
+            height="px"
+            color="white"
+            style="color: crimson; font-size: larger"
+          >
+            <strong
+              ><i
+                ><b>Hello, "Welcome to the Blogs ". by Benard Akaka</b></i
+              ></strong
+            ></marquee
+          ><link rel="stylesheet" href="" /></p
+      ></span>
     </div>
 
-    <div>
-        <div class="card card-image">
-            <div class="text-white text-center unique-color py-5 px-4">
-                <div class="py-5">
-
-                    <h5 class="h5 purple-text"><i class="fas fa-comment fa-fw"></i> Blogging is the process of writing a blog, an online journal in which you share your thoughts about a particular subject with readers.</h5>
-                    <h2 class="card-title h2 my-4 py-2">{{quote.author}}</h2>
-                    <p class="mb-4 pb-2 px-md-5 mx-md-5">{{quote.quote}}</p>
-                    <a class="btn purple-gradient" aria-haspopup="true" aria-expanded="false"
-                        href="{{url_for('main.allBlogs')}}"><i class="fa fa-eye"></i> View Blogs</a>
-
-                </div>
-            </div>
-        </div>
+    <div class="jumbotron">
+      <div
+        class="quote"
+        style="font-size: larger; text-align: center; margin-top: 5cm"
+      >
+        <p
+          class="qq"
+          style="font-family: 'Marck Script', cursive; font-size: xx-large"
+        >
+          {{quote.quote}}
+        </p>
+        <hr class="my-4"/>
+        <p>Author:- {{quote.author}}</p>
+      </div>
+          
+      <div
+        class="container-fluid bg-primary"
+        style="position: absolute; top: 100vh">
+        {% include 'footer.html'%}
+      </div>
     </div>
-    <footer class="page-footer font-small dark secondary-color">
+  </div>
+  {% endblock %}
 
-        <div class="footer-copyright text-center py-3">© 2021 Copyright|
-            <a href="#"> MyBlog</a>
-        </div>
-
-    </footer>
+  <style>
+    body{
+      background-image: url('../static/Ben.jpg');
+    }
+  </style>
 </div>
-{% endfor %}
-{% endblock %}  
+ 
