@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block content %}
+
+<div class="container-fluid mt-4 pt-4 mb-4 pb-4" style="background-color: white; font-family: 'Happy monkey', cursive;">
+    {{wtf.quick_form(form)}} 
+</div>
+
+<div class="container-fluid bg-primary" style="margin-top: 6cm;">
+    {% include 'footer.html'%}
+  </div>
+
+{% endblock %}
