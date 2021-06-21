@@ -1,19 +1,19 @@
 import urllib.request,json
+from .models import Quote
 
-# Getting the quotes base url
 base_url = None
-
 def configure_request(app):
     global base_url
-    base_url = app.config['API_BASE_URL']
-    
-def get_quotes():
-    
-    get_quotes_url = base_url
-    print(get_quotes_url)
-    
-    with urllib.request.urlopen('http://quotes.stormconsultancy.co.uk/random.json') as url:
-        get_quotes_data = url.read()
-        get_quotes_response = json.loads(get_quotes_data)
-        
-    return get_quotes_response
+    base_url = app.config['QUOTE_API_BASE_URL']
+def getQuotes():
+    with urllib.request.urlopen(base_url) as url:
+        quotesResponse = url.read()
+        word = json.loads(quotesResponse)
+        print(word)
+        read = []
+        id = word.get('id')
+        author = word.get('author')
+        quote = word.get('quote')
+        quoteObject = Quote(id,author,quote)
+        read.append(quoteObject)
+        return read
