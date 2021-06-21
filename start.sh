@@ -5,3 +5,4 @@ export MAIL_PASSWORD='gazajoga@Moringa'
 export SECRET_KEY='ayuel'
 
 python3.8 manage.py server 
+
