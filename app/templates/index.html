@@ -1,64 +1,42 @@
 {% extends 'base.html'%}
-<!DOCTYPE html>
-
-<head> </head>
+{%block navbar %}
+{% include 'navbar.html' %}
+{% endblock %}
 {% block content %}
+{% for quote in getquotes %}
+<div class="container-fluid" style="padding: 2em;">
+    
+        <div class="overlay">
+            <h1 class="text-center text-bold" style="color: black;">WELCOME TO MY BLOG</h1>
+            <h4 class="text-center mb-5 mt-5 pt-3 pb-5">This is a personal blogging website where you can create and share
+                your opinions and other users can read and comment on them. Also displays random quotes on the site.</h4>
+    
+        </div>
+    
 
-<div class="container-fluid">
-  <div class="wrapper">
-    <div style="text-align: center; font-size: 30px">
-      <span
-        style="
-          font-size: 100px;
-          font-family: 'Special Elite', cursive;
-          text-align: center;
-        "
-        class="text-primary"
-        ><p>
-          <marquee
-            behaviour="scroll"
-            width="1300px"
-            height="px"
-            color="white"
-            style="color: crimson; font-size: larger"
-          >
-            <strong
-              ><i
-                ><b>Hello, "Welcome to the Blogs ". by Benard Akaka</b></i
-              ></strong
-            ></marquee
-          ><link rel="stylesheet" href="" /></p
-      ></span>
-    </div>
+    <div>
+        <div class="card card-image">
+            <div class="text-white text-center" style="background-color: skyblue;">
+                <div class="py-5">
 
-    <div class="jumbotron">
-      <div
-        class="quote"
-        style="font-size: larger; text-align: center; margin-top: 5cm"
-      >
-        <p
-          class="qq"
-          style="font-family: 'Marck Script', cursive; font-size: xx-large"
-        >
-          {{quote.quote}}
-        </p>
-        <hr class="my-4"/>
-        <p>Author:- {{quote.author}}</p>
-      </div>
-          
-      <div
-        class="container-fluid bg-primary"
-        style="position: absolute; top: 100vh">
-        {% include 'footer.html'%}
-      </div>
-    </div>
-  </div>
-  {% endblock %}
+                    <h5 class="h5 purple-text"><i class="fas fa-comment fa-fw"></i> Today's Blog
+                        code.</h5>
+                    <h2 class="card-title " style="color: black;">{{quote.author}}</h2>
+                    <p class="mb-4 pb-2  " style="color: blue;">{{quote.quote}}</p>
+                    <a class="btn " aria-haspopup="true" aria-expanded="false"
+                        href="{{url_for('main.allBlogs')}}"><i class="fa fa-eye"></i> <strong style="color: brown;">See more</strong></b></a>
 
-  <style>
-    body{
-      background-image: url('../static/Ben.jpg');
-    }
-  </style>
+                </div>
+            </div>
+        </div>
+    </div><br><br><br>
+    <footer class="page-footer dark grey" style="padding: 2em;">
+
+        <div class="footer-copyright text-center py-3">© 2021 Copyright:Gabriel|
+            <a href="#"> MyBlog</a>
+        </div>
+
+    </footer>
 </div>
- 
+{% endfor %}
+{% endblock %}

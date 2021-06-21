@@ -1,59 +1,59 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="container-fluid">
-    <div class="content-section">
-      <div class="media">
-        <img class="rounded-circle account-img" src="{{ image_file }}">
-        <div class="media-body">
-          <h2 class="account-heading">{{ current_user.username }}</h2>
-          <p class="text-secondary">{{ current_user.email }}</p>
-        </div>
-      </div>
-        <form method="POST" action="" enctype="multipart/form-data">
-            {{ form.hidden_tag() }}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Account Info</legend>
-                <div class="form-group">
-                    {{ form.username.label(class="form-control-label") }}
+{% extends 'base.html'%}
+{% import 'macros.html' as macro%}
 
-                    {% if form.username.errors %}
-                        {{ form.username(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.username.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.username(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.email.label(class="form-control-label") }}
-                    {% if form.email.errors %}
-                        {{ form.email(class="form-control form-control-lg is-invalid") }}
-                        <div class="invalid-feedback">
-                            {% for error in form.email.errors %}
-                                <span>{{ error }}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.email(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.picture.label() }}
-                    {{ form.picture(class="form-control-file") }}
-                    {% if form.picture.errors %}
-                        {% for error in form.picture.errors %}
-                            <span class="text-danger">{{ error }}</span></br>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </fieldset>
-            <div class="form-group">
-                {{ form.submit(class="btn btn-outline-info") }}
-            </div>
-        </form>
-    </div>
+{% block content %}
+<div class="container" style="font-size: 20px; font-family: 'Merienda', cursive;  padding-top: 40px;">
+  <h3 class="text-center mt-3" >My Profile</h3>
+<hr>
+<div class="row">
+<!-- displaying  Username-->
+  <div class="col-4">
+
+
+    {% if user.profile_pic_path %}
+
+  <img src="{{url_for('static',filename=user.profile_pic_path)}}" alt="" class="img-thumbnail">
+
+  {%else%}
+  <p>No profile picture</p>
+
+  {% endif %}
+
 </div>
-{% endblock content %}
+
+<div class="col-8">
+ <!--Displaying user bio-->
+  <div class="mr-5">
+    <span class="row">
+      <h3 class="h3"> Username : </h3><p class="h3">{{user.username| capitalize}} </p>
+    </span>
+    {% if user.bio %}
+    <p class="h3"> Bio : {{user.bio}}</p>
+  {%else%}
+    <p> {{user.username| capitalize}} has no bio </p>
+  {% endif %}
+
+  </div>
+  {% if user == current_user %}
+  <form  action="{{url_for('main.update_pic',uname=user.username)}}" method="post" enctype = "multipart/form-data" class="pt-5">
+    <div class="form-group">
+      <input type="file"  name="photo" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <!-- <input type="submit" class="form-control"> -->
+      <button class="btn btn-info" type="submit">Submit</button>
+    </div>
+  </form>
+    {% endif %}
+
+    {% if user == current_user %}
+<a href="{{url_for('main.update_profile',uname=user.username)}}" class="btn btn-default btn-center -center">
+  Edit Profile</a>
+{% endif %}
+
+</div>
+</div>
+  <hr>
+</div>
+{% endblock %}
+  </div>
