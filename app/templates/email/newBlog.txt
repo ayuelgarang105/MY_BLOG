@@ -1,0 +1,10 @@
+Dear Subscriber!
+
+Sign in and check out this new blog and comment
+
+Title: {{newBlog.title_blog}}
+Post: {{newBlog.description|truncate(50)}}
+
+
+Yours sincerely,
+Gabriel's Blog Admin.
