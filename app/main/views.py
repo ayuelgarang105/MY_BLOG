@@ -1,120 +1,144 @@
-from flask import render_template, redirect, url_for, request
-from flask_login import login_required, current_user
+from flask import render_template,request,redirect,url_for,flash
 from . import main
-from ..models import Blog, User, Comment,Subscriber
-from .forms import BlogForm, CommentForm,SubscriberForm
-from .. import db
-from ..requests import get_quotes
+from .. import db,photos
+from flask_login import login_user,logout_user,login_required,current_user
+from ..requests import getQuotes
+from .forms import BlogForm,CommentForm,updateProfile,SubscriberForm
+from ..models import Blog,Comment,User,Subscriber
+from ..email import mail_message
 
-# Views
-@main.route("/")
+@main.route('/',methods = ['GET'])
 def index():
-    """
-    View root page function that returns the index page and its data
-    """
-    title = "Home - Blog"
-
-    quote = get_quotes()
-    return render_template("index.html", quote=quote)
-
-@main.route("/blogs")
-@main.route("/blogs/<category>")
-def blogs(category=None):
+    getquotes = getQuotes()
+    return render_template ('index.html',getquotes = getquotes)
 
 
-    """
-    View root page function that returns the index page and its data
-    """
-    if not category:
-        blogs = Blog.query.all()
-    else:
-        blogs = Blog.query.filter_by(category=category)
-
-    return render_template("blogs.html", category=category, blogs=blogs)
-
-
-
-@main.route("/blog/new/", methods=["GET", "POST"])
-@login_required
-def new_blog():
-    """
-    Function that creates new blogs
-    """
-    form = BlogForm()
-    if form.validate_on_submit():
-        category = form.category.data
-        blog = form.content.data
-
-        new_blog  = Blog(content=blog, user=current_user)
-
-        new_blog.save_blog()
-        return redirect(url_for("main.blogs"))
-
-    return render_template("new_blog.html", new_blog_form=form)
-
-
-@main.route("/user/<uname>")
+    
+@main.route('/user/<uname>')
 def profile(uname):
-    user = User.query.filter_by(username=uname).first()
-
+    user = User.query.filter_by(username = uname).first()
+    blogs = Blog.query.filter_by(user_id = user.id).all()
     if user is None:
         abort(404)
 
-    return render_template("Profile/profile.html", user=user)
+    return render_template('profile/profile.html',user = user,blogs=blogs)  
 
-
-@main.route("/user/<uname>/update", methods=["GET", "POST"])
+@main.route('/user/<uname>/update',methods = ['GET','POST'])
 @login_required
 def update_profile(uname):
-    user = User.query.filter_by(username=uname).first()
+    user = User.query.filter_by(username = uname).first()
     if user is None:
         abort(404)
 
-    form = UpdateProfile()
+    form = updateProfile()
 
     if form.validate_on_submit():
         user.bio = form.bio.data
 
         db.session.add(user)
         db.session.commit()
+           
+        return redirect(url_for('.profile',uname=user.username))
 
-        return redirect(url_for(".profile", uname=user.username))
+    return render_template('profile/update.html',form =form)  
 
-    return render_template("profile/update.html", form=form)
-
-
-@main.route("/blog/comments/<int:blog_id>", methods=["GET", "POST"])
+@main.route('/user/<uname>/update/pic',methods= ['POST'])
 @login_required
-def view_comments(blog_id):
-    """
-    Function that return  the comments belonging to a particular blog
-    """
-    form = CommentForm()
-    blog = Blog.query.filter_by(id=blog_id).first()
-    comments = Comment.query.filter_by(blog_id=blog.id)
+def update_pic(uname):
+    user = User.query.filter_by(username = uname).first()
+    if 'photo' in request.files:
+        filename = photos.save(request.files['photo'])
+        path = f'photos/{filename}'
+        user.profile_pic_path = path
+        db.session.commit()
+    return redirect(url_for('main.profile',uname=uname))    
+
+@main.route('/blog/newBlog',methods = ['GET','POST'])
+@login_required
+def newBlog():
+    subscribers = Subscriber.query.all()
+    blogForm = BlogForm()
+    if blogForm.validate_on_submit():
+        titleBlog=blogForm.blogTitle.data
+        description = blogForm.blogDescription.data
+        newBlog = Blog(title_blog=titleBlog, description=description, user= current_user)
+        newBlog.saveBlog()
+        for subscriber in subscribers:
+            mail_message("Alert New Blog","email/newBlog",subscriber.email,newBlog=newBlog)
+        return redirect(url_for('main.index'))
+        flash('New Blog Posted')
+        return redirect(url_for('main.allBlogs'))
+    title = 'New Blog'
+    return render_template('MyBlog.html', title=title, blog_form=blogForm)
+
+
+@main.route('/blog/allblogs', methods=['GET', 'POST'])
+@login_required
+def allBlogs():
+    blogs = Blog.getallBlogs()
+    return render_template('Myblogs.html', blogs=blogs)
+
+@main.route('/comment/new/<int:id>', methods=['GET', 'POST'])
+@login_required
+def newComment(id):
+    blog = Blog.query.filter_by(id = id).all()
+    blogComments = Comment.query.filter_by(blog_id=id).all()
+    comment_form = CommentForm()
+    if comment_form.validate_on_submit():
+        comment = comment_form.comment.data
+        new_comment = Comment(blog_id=id, comment=comment, user=current_user)
+        new_comment.saveComment()
+    return render_template('Comment.html', blog=blog, blog_comments=blogComments, comment_form=comment_form)
+
+@main.route('/delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def deleteComment(id):
+    comment =Comment.query.get_or_404(id)
+    db.session.delete(comment)
+    db.session.commit()
+    flash('comment succesfully deleted')
+    return redirect (url_for('main.allBlogs'))
+
+
+@main.route('/deleteblog/<int:id>', methods=['GET', 'POST'])
+@login_required
+def deleteBlog(id):
+    blog = Blog.query.get_or_404(id)
+    db.session.delete(blog)
+    db.session.commit()
+    return redirect(url_for('main.allBlogs'))   
+
+
+@main.route('/update/<int:id>', methods=['GET', 'POST'])
+@login_required
+def updateBlog(id):
+    blog = Blog.query.get_or_404(id)
+    form = BlogForm()
     if form.validate_on_submit():
-        new_comment = Comment(comment=form.comment.data, blog=blog, user=current_user)
-        new_comment.save_comment()
-        return redirect(url_for("main.view_comments", blog_id=blog.id))
+        blog.title_blog = form.blogTitle.data
+        blog.description = form.blogDescription.data
+        db.session.add(blog)
+        db.session.commit()
 
-    return render_template(
-        "comments.html", blog=blog, comments=comments, comment_form=form)
+        return redirect(url_for('main.allBlogs'))
+    elif request.method == 'GET':
+        form.blogTitle.data = blog.title_blog
+        form.blogDescription.data = blog.description
+    return render_template('Update.html', form=form)
 
-    @main.route('/subscribe', methods=['GET','POST'])
-        
-    def subscriber():
-        quote = get_quotes()
-        subscriber_form=SubscriberForm()
-        blog = Blog.query.order_by(Blog.date.desc()).all()
-        if subscriber_form.validate_on_submit():
-            subscriber= Subscriber(email=subscriber_form.email.data,name = subscriber_form.name.data)
-            
-            db.session.add(subscriber)
-            db.session.commit()
 
-            mail_message("Welcome to K-Blogs","email/subscriber",subscriber.email,subscriber=subscriber)
-            title= "K-BLOGS"
-            return render_template('index.html',title=title, blog=blog, quote=quote)
-        subscriber = Blog.query.all()
-        blog = Blog.query.all()
-        return render_template('subscribe.html',subscriber=subscriber,subscriber_form=subscriber_form,blog=blog)
+@main.route('/subscribe', methods=['GET','POST'])
+def subscriber():
+    getquotes = getQuotes()
+    subscriber_form=SubscriberForm()
+    blog = Blog.query.order_by(Blog.posted.desc()).all()
+    if subscriber_form.validate_on_submit():
+        subscriber= Subscriber(email=subscriber_form.email.data,name = subscriber_form.name.data)
+        db.session.add(subscriber)
+        db.session.commit()
+        mail_message("Welcome to Gabriel's Blog","email/wel_subscriber",subscriber.email,subscriber=subscriber)
+        title= "MyBlog"
+        return render_template('index.html',title=title, blog=blog, getquotes = getquotes)
+    subscriber = Blog.query.all()
+    blog = Blog.query.all()
+    return render_template('subscribe.html',subscriber=subscriber,subscriber_form=subscriber_form,blog=blog)  
