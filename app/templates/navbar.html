@@ -1,8 +1,8 @@
 <!--Navbar-->
-<nav class="navbar navbar-expand-lg navbar-dark grey" style="padding: 2em;">
+<nav class="navbar navbar-expand-lg navbar-dark blue" style="padding: 1em;">
 
   <!-- Navbar brand -->
-  <a class="navbar-brand" href="/">MyBlog
+  <a class="navbar-brand" href="/">
       <span class="sr-only">(current)</span>
   </a>
 
@@ -21,8 +21,8 @@
           </li>
           
       </ul>
-
-      <ul class="navbar-nav ml-auto">
+       
+      <ul class="navbar-nav ml-auto" style="padding-right: 75em;" >
 
           <li>
             <a class="nav-link text-white pr-4" aria-haspopup="true" aria-expanded="false" href="{{url_for('main.profile',uname=current_user.username)}}">Profile</a>
@@ -36,7 +36,7 @@
             <a class="nav-link text-white pr-4" aria-haspopup="true" aria-expanded="false" href = "{{url_for('main.allBlogs')}}">Blogs</a>
           </li>
           <li>
-            <a class="nav-link text-white pr-5" aria-haspopup="true" aria-expanded="false" href = "{{url_for('main.newBlog')}}">Add new blog</a>
+            <a class="nav-link text-white pr-5" aria-haspopup="true" aria-expanded="false" href = "{{url_for('main.newBlog')}}">Add New Blog</a>
           </li>
       </ul>
 
