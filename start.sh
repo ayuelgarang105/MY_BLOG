@@ -6,3 +6,6 @@ export SECRET_KEY='ayuel'
 
 python3.8 manage.py server 
 
+
+
+
